@@ -39,3 +39,25 @@ export const getEmployeeById = async (id: string): Promise<Employee> => {
   }
   return employee;
 };
+
+/**
+ * @description Create a new employee.
+ * @param {{ name: string; position: string; department: string; email: string; phone: string; branchId: number; }} employeeData
+ * @returns {Promise<Employee>}
+ */
+export const createEmployee = async (employeeData: {
+  name: string;
+  position: string;
+  department: string;
+  email: string;
+  phone: string;
+  branchId: number;
+}): Promise<Employee> => {
+  const newEmployee: Employee = {
+    id: Date.now().toString(), // using timestamp as unique id
+    ...employeeData,
+  };
+
+  employees.push(newEmployee);
+  return newEmployee;
+};
