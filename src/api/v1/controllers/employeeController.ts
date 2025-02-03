@@ -65,6 +65,27 @@ export const createEmployee = async (
   };
 
 /**
+ * @description Update an existing employee.
+ * @route PUT /:id
+ * @returns {Promise<void>}
+ */
+export const updateEmployee = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<void> => {
+    try {
+      const updatedEmployee: Employee = await employeeService.updateEmployee(
+        req.params.id,
+        req.body
+      );
+      res.status(200).json({ message: "Employee Updated", data: updatedEmployee });
+    } catch (error) {
+      next(error);
+    }
+  };
+
+/**
  * @description Delete an employee.
  * @route DELETE /:id
  * @returns {Promise<void>}
