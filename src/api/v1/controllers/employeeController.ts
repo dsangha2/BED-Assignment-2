@@ -102,3 +102,45 @@ export const deleteEmployee = async (
       next(error);
     }
   };
+
+/**
+ * @description Get employees for a specific branch.
+ * @route GET /branch/:branchId
+ * @returns {Promise<void>}
+ */
+export const getEmployeesByBranch = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<void> => {
+    try {
+      const branchId = Number(req.params.branchId);
+      const employees = await employeeService.getAllEmployees();
+      const filteredEmployees = employees.filter(emp => emp.branchId === branchId);
+      res.status(200).json({ message: "Employees for Branch Retrieved", data: filteredEmployees });
+    } catch (error) {
+      next(error);
+    }
+  };
+  
+  /**
+   * @description Get employees by department.
+   * @route GET /department/:department
+   * @returns {Promise<void>}
+   */
+  export const getEmployeesByDepartment = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<void> => {
+    try {
+      const department = req.params.department;
+      const employees = await employeeService.getAllEmployees();
+      const filteredEmployees = employees.filter(emp =>
+        emp.department.toLowerCase() === department.toLowerCase()
+      );
+      res.status(200).json({ message: "Employees by Department Retrieved", data: filteredEmployees });
+    } catch (error) {
+      next(error);
+    }
+  };
