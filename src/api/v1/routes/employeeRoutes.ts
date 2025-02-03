@@ -17,6 +17,18 @@ const router: Router = express.Router();
 router.get("/", employeeController.getAllEmployees);
 
 /**
+ * @route GET /branch/:branchId
+ * @description Get employees for a specific branch.
+ */
+router.get("/branch/:branchId", employeeController.getEmployeesByBranch);
+
+/**
+ * @route GET /department/:department
+ * @description Get employees by department.
+ */
+router.get("/department/:department", employeeController.getEmployeesByDepartment);
+
+/**
  * @route GET /:id
  * @description Get a single employee by ID.
  */
