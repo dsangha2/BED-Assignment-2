@@ -30,7 +30,7 @@ router.get("/department/:department", employeeController.getEmployeesByDepartmen
 
 /**
  * @route GET /:id
- * @description Get a single employee by ID.
+ * @description Get an employee by ID.
  */
 router.get("/:id", employeeController.getEmployeeById);
 
