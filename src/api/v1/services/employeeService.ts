@@ -25,3 +25,17 @@ export type Employee = {
   export const getAllEmployees = async (): Promise<Employee[]> => {
     return employees;
   };
+
+  /**
+ * @description Get an employee by ID.
+ * @param {string} id - The ID of the employee to retrieve.
+ * @returns {Promise<Employee>}
+ * @throws {Error} If the employee is not found.
+ */
+export const getEmployeeById = async (id: string): Promise<Employee> => {
+  const employee = employees.find(emp => emp.id === id);
+  if (!employee) {
+    throw new Error(`Employee with ID ${id} not found`);
+  }
+  return employee;
+};
