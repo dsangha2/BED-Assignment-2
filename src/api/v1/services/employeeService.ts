@@ -88,3 +88,18 @@ export const updateEmployee = async (
   employees[index] = { ...employees[index], ...employeeData };
   return employees[index];
 };
+
+/**
+ * @description Delete an employee.
+ * @param {string} id - The ID of the employee to delete.
+ * @returns {Promise<void>}
+ * @throws {Error} If the employee with the given ID is not found.
+ */
+export const deleteEmployee = async (id: string): Promise<void> => {
+  const index = employees.findIndex(emp => emp.id === id);
+  if (index === -1) {
+    throw new Error(`Employee with ID ${id} not found`);
+  }
+
+  employees.splice(index, 1);
+};
