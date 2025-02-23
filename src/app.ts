@@ -1,10 +1,14 @@
 import express, {Express} from "express";
-import setupSwagger from "../config/swagger";
 import morgan from "morgan";
+import setupSwagger from "../config/swagger";
+import employeeRoutes from "./api/v1/routes/employeeRoutes";
+import branchRoutes from "./api/v1/routes/branchRoutes";
 
 const app: Express = express();
 
 setupSwagger(app);
+
+app.use(morgan("combined"));
 
 /**
  * @openapi
@@ -28,7 +32,7 @@ app.get("/api/v1/health", (req, res) => {
 	});
 });
 
-// Use morgan for HTTP request logging
-app.use(morgan("combined"));
+app.use("/api/v1/employees", employeeRoutes);
+app.use("/api/v1/branches", branchRoutes);
 
 export default app; 
