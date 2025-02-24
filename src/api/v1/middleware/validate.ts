@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from "express";
 import { ObjectSchema } from "joi";
-import { HTTP_STATUS } from "";
+import { HTTP_STATUS } from "../../../constants/httpConstants";
 
 export function validate<T>(schema: ObjectSchema<T>, data: T): void {
   const { error } = schema.validate(data, { abortEarly: false });
