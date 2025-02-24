@@ -25,18 +25,6 @@ router.get("/", branchController.getAllBranches);
 router.get("/:id", branchController.getBranchById);
 
 /**
- * @route POST /
- * @description Create a new branch.
- */
-router.post("/", branchController.createBranch);
-
-/**
- * @route PUT /:id
- * @description Update an existing branch.
- */
-router.put("/:id", branchController.updateBranch);
-
-/**
  * @route DELETE /:id
  * @description Delete a branch.
  */

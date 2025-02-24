@@ -7,6 +7,8 @@ import errorHandler from "./api/v1/middleware/errorHandler";
 
 const app: Express = express();
 
+app.use(express.json());
+
 setupSwagger(app);
 
 app.use(morgan("combined"));

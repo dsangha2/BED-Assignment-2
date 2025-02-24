@@ -37,18 +37,6 @@ router.get("/department/:department", employeeController.getEmployeesByDepartmen
 router.get("/:id", employeeController.getEmployeeById);
 
 /**
- * @route POST /
- * @description Create a new employee.
- */
-router.post("/", employeeController.createEmployee);
-
-/**
- * @route PUT /:id
- * @description Update an existing employee.
- */
-router.put("/:id", employeeController.updateEmployee);
-
-/**
  * @route DELETE /:id
  * @description Delete an employee.
  */
