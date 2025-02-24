@@ -1,75 +1,90 @@
 # Debugging Analysis
 
-## Scenario 1: Debugging Employee Creation
+This document covers three debugging scenarios in our Node.js/Express/TypeScript project. Each scenario demonstrates where I paused the code, what I observed, and what I learned. Screenshots are located in the `debugging/screenshots/` folder.
 
-- **Breakpoint Location:**  
-  src/api/v1/controllers/employeeController.ts, line 61.
-- **Objective:**  
-  Check that the `createEmployee` function gets the right data from the request and creates a new employee correctly.
+## Scenario 1: Validation Logic (Joi)
+
+- **Breakpoint Location:** `src/api/v1/middleware/validate.ts` line 18
+- **Objective:** Investigate how missing fields (`name`) trigger a validation error.
+
+### Debugger Observations
+- **Variable States:** 
+  - `data` was `{ position: "Manager" }` 
+  - `schema` was the employee schema requiring `name`
+  - `error.details` said “Name cannot be empty”
+- **Call Stack:** 
+  1. `validateRequest(employeeSchema)`
+  2. `validate(schema, data)`
+  3. `schema.validate(...)`
+- **Behavior:** 
+  - The code was about to throw an error for missing `name`.
+  - This means it would send a 400 response to Postman.
+
+### Analysis
+- We learned how Joi quickly flags missing fields.
+- Everything worked as intended: no unexpected behavior.
+- Possibly I could unify error messages or add more fields to the schema.
+- This scenario confirmed the request is stopped early if it fails validation.
+
+## Scenario 2: Firestore Operations in `getEmployeeById`
+
+- **Breakpoint Location:** `src/api/v1/services/employeeService.ts` line 55
+- **Objective:** Watch how we retrieve an employee document from Firestore and transform it into an `Employee` object.
 
 ### Debugger Observations
 
-- **Variable States:**  
-  - `req.body` holds the employee details (name, position, department, email, phone, branchId).  
-  - The call to `employeeService.createEmployee(req.body)` returns a new employee object that includes a generated `id`.
-- **Call Stack:**  
-  - The execution starts in the controller’s `createEmployee`, calls the service function, and then returns the response.
-- **Behavior:**  
-  - When stopped at the breakpoint, I see that the correct data is passed to the service and a new employee object is produced.
+- **Variable States:**
+  - `id` contained the employee’s Firestore document ID (for example, `"abc123"`).
+  - `docSnap` came from `firestoreRepo.getDocumentById("employees", id)`.
+    - `docSnap.id` might be `"abc123"`.
+    - `docSnap.data()` returned `{ name: "Alice", department: "IT", ... }`.
+
+- **Call Stack:**
+  1. `employeeController.getEmployeeById`
+  2. `employeeService.getEmployeeById`
+  3. `firestoreRepo.getDocumentById("employees", "abc123")`
+
+- **Behavior:**
+  - If Firestore finds the document, the service merges `{ id: docSnap.id, ...docSnap.data() }` into an `Employee` object.
+  - If the document does not exist, the repository throws a `RepositoryError`, eventually becoming a 404 in our global error handler.
 
 ### Analysis
 
-- I learned that the employee creation process is working as expected.  
-- There was no unexpected behavior; the data flow from the request to the service is correct.  
-- The code is clear, but in a real-world app, I might add extra error handling or logging.  
-- This debugging confirms that the employee creation endpoint is functioning, which is a key part of the project.
+- This scenario showed exactly how Firestore data is turned into our `Employee` type.
+- If the doc is missing, we get a `RepositoryError`, which leads to a 404 rather than a 500.
+- Everything behaved as expected, confirming that `docSnap.data()` merges neatly into a typed object.
+- Observing these variable states in the debugger gave us confidence that our Firestore logic is correct and aligned with our error-handling design.
 
 
-## Scenario 2: Debugging Branch Update
+## Scenario 3: Error Handling Middleware
 
-- **Breakpoint Location:**  
-  src/api/v1/controllers/branchController.ts, line 64.
-- **Objective:**  
-  Ensure that the `updateBranch` function correctly reads the branch ID and the updated data, and then returns the updated branch details.
+- **Breakpoint Location:** `src/api/v1/middleware/errorHandler.ts` line 54
+- **Objective:** Confirm how a `RepositoryError` travels through our global error handler and sets the correct HTTP status code.
 
 ### Debugger Observations
 
-- **Variable States:**  
-  - `req.params.id` correctly contains the branch ID.  
-  - `req.body` contains the updated branch information (like a new name or address).
-- **Call Stack:**  
-  - The function is called in the controller, then the branch service is invoked, and the result is sent back.
-- **Behavior:**  
-  - At the breakpoint, the function finds the branch, applies the updates, and returns the updated branch object.
+- **Variable States:**
+  - `err` was a `RepositoryError` with `message = "Employee not found"` and `statusCode = 404`.
+  - `res` was not yet populated at the moment of pausing. After the breakpoint, we set `res.status(err.statusCode)`.
+
+- **Call Stack:**
+  1. `employeeService.getEmployeeById` → doc not found
+  2. `firestoreRepo.getDocumentById("employees", someId)` → throws `RepositoryError`
+  3. `errorHandler(err, req, res, next)`
+
+- **Behavior:**
+  - The debugger paused where the code checks `if (err instanceof RepositoryError)`.
+  - Because `err` was recognized as `RepositoryError`, it set `res.status(404)` and returned a JSON error.
+  - If `err` was not recognized, it would have defaulted to a 500 status with “An unexpected error occurred.”
 
 ### Analysis
 
-- I learned that the branch update functionality is working properly.  
-- No unexpected behavior was observed.  
-- The code is simple and effective, though adding more logging in a production setting could help.  
-- This confirms that the branch update endpoint is solid, which is important for managing branch data.
+- Confirmed that missing docs lead to a `RepositoryError`, which is correctly translated into a 404 response.
+- No unexpected behavior occurred everything matched design.
+- Potential improvements could include adding more specific error codes or logs, but overall, it works fine.
+- This scenario helped illustrate how custom errors bubble up from the repository to the service and finally to the global error handler, ensuring the client receives an appropriate status code and message.
 
 
-## Scenario 3: Debugging Get Employees by Department
+# Conclusion
 
-- **Breakpoint Location:**  
-  src/api/v1/controllers/employeeController.ts, line 135.
-- **Objective:**  
-  Verify that the function correctly filters the list of employees by the department provided in the request.
-
-### Debugger Observations
-
-- **Variable States:**  
-  - `req.params.department` contains the department name (for example, "QA").  
-  - The full list of employees is retrieved from the service, and then a filter is applied to select only those with a matching department (ignoring case).
-- **Call Stack:**  
-  - The function calls `employeeService.getAllEmployees`, applies the filter, and then sends the filtered list as a response.
-- **Behavior:**  
-  - At the breakpoint, the filtering works as expected; only the employees from the specified department are selected.
-
-### Analysis
-
-- I learned that the filtering logic by department is implemented correctly.  
-- There was no unexpected behavior during filtering.  
-- While the code is simple and easy to understand, adding inline comments could make it even clearer for future developers.  
-- This debugging step boosts my confidence that the logical endpoints (like filtering by department) are working well, which is a key part of the assignment.
+By stepping through these three scenarios Joi validation, Firestore operations, and error handling—we verified each layer of our application. I confirmed that invalid data is blocked early, Firestore documents are retrieved and merged properly, and custom errors are returned with the correct HTTP status codes. This debugging process gave me deeper insight into how the code flows from request to response and how each layer handles errors or missing data.

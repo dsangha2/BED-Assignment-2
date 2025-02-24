@@ -7,6 +7,8 @@
  */
 import express, { Router } from "express";
 import * as employeeController from "../controllers/employeeController";
+import { validateRequest } from "../middleware/validate";
+import { employeeSchema } from "../schemas/employeeSchema";
 
 const router: Router = express.Router();
 
@@ -35,21 +37,21 @@ router.get("/department/:department", employeeController.getEmployeesByDepartmen
 router.get("/:id", employeeController.getEmployeeById);
 
 /**
+ * @route DELETE /:id
+ * @description Delete an employee.
+ */
+router.delete("/:id", employeeController.deleteEmployee);
+
+/**
  * @route POST /
  * @description Create a new employee.
  */
-router.post("/", employeeController.createEmployee);
+router.post("/", validateRequest(employeeSchema), employeeController.createEmployee);
 
 /**
  * @route PUT /:id
  * @description Update an existing employee.
  */
-router.put("/:id", employeeController.updateEmployee);
-
-/**
- * @route DELETE /:id
- * @description Delete an employee.
- */
-router.delete("/:id", employeeController.deleteEmployee);
+router.put("/:id", validateRequest(employeeSchema), employeeController.updateEmployee);
 
 export default router;
