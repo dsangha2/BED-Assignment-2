@@ -7,6 +7,8 @@
  */
 import express, { Router } from "express";
 import * as branchController from "../controllers/branchController";
+import { validateRequest } from "../middleware/validate";
+import { branchSchema } from "../schemas/branchSchema";
 
 const router: Router = express.Router();
 
@@ -23,21 +25,21 @@ router.get("/", branchController.getAllBranches);
 router.get("/:id", branchController.getBranchById);
 
 /**
+ * @route DELETE /:id
+ * @description Delete a branch.
+ */
+router.delete("/:id", branchController.deleteBranch);
+
+/**
  * @route POST /
  * @description Create a new branch.
  */
-router.post("/", branchController.createBranch);
+router.post("/", validateRequest(branchSchema), branchController.createBranch);
 
 /**
  * @route PUT /:id
  * @description Update an existing branch.
  */
-router.put("/:id", branchController.updateBranch);
-
-/**
- * @route DELETE /:id
- * @description Delete a branch.
- */
-router.delete("/:id", branchController.deleteBranch);
+router.put("/:id", validateRequest(branchSchema), branchController.updateBranch);
 
 export default router;
