@@ -15,6 +15,27 @@ const router: Router = express.Router();
 
 /**
  * @openapi
+ * components:
+ *   schemas:
+ *     Branch:
+ *       type: object
+ *       properties:
+ *         id:
+ *           type: string
+ *           description: Unique identifier for the branch
+ *         name:
+ *           type: string
+ *           description: The branch name
+ *         location:
+ *           type: string
+ *           description: Physical address or location of the branch
+ *       required:
+ *         - id
+ *         - name
+ */
+
+/**
+ * @openapi
  * /branches:
  *   get:
  *     summary: Get all branches
@@ -23,7 +44,7 @@ const router: Router = express.Router();
  *       - bearerAuth: []
  *     responses:
  *       200:
- *         description: Returns a list of branches
+ *         description: A list of branches
  *         content:
  *           application/json:
  *             schema:
@@ -50,7 +71,7 @@ router.get("/", branchController.getAllBranches);
  *         description: The ID of the branch
  *     responses:
  *       200:
- *         description: A single branch
+ *         description: Branch details
  *         content:
  *           application/json:
  *             schema:
@@ -64,7 +85,7 @@ router.get("/:id", branchController.getBranchById);
  * @openapi
  * /branches/{id}:
  *   delete:
- *     summary: Delete a branch by ID
+ *     summary: Delete a branch
  *     tags: [Branches]
  *     security:
  *       - bearerAuth: []
@@ -92,7 +113,7 @@ router.delete("/:id", branchController.deleteBranch);
  *     security:
  *       - bearerAuth: []
  *     requestBody:
- *       description: Branch data
+ *       description: Branch data to create
  *       required: true
  *       content:
  *         application/json:
@@ -100,7 +121,7 @@ router.delete("/:id", branchController.deleteBranch);
  *             $ref: '#/components/schemas/Branch'
  *     responses:
  *       201:
- *         description: Branch created
+ *         description: Branch created successfully
  *       400:
  *         description: Invalid input
  */
@@ -122,7 +143,7 @@ router.post("/", validateRequest(branchSchema), branchController.createBranch);
  *           type: string
  *         description: The ID of the branch
  *     requestBody:
- *       description: Branch data
+ *       description: Updated branch data
  *       required: true
  *       content:
  *         application/json:
@@ -130,7 +151,7 @@ router.post("/", validateRequest(branchSchema), branchController.createBranch);
  *             $ref: '#/components/schemas/Branch'
  *     responses:
  *       200:
- *         description: Branch updated
+ *         description: Branch updated successfully
  *       404:
  *         description: Branch not found
  */

@@ -6,7 +6,8 @@
     "start": "ts-node src/server.ts",
     "build": "tsc",
     "test": "jest",
-    "test:watch": "jest --watch"
+    "test:watch": "jest --watch",
+    "generate-docs": "ts-node scripts/generate-openapi.ts && npx @redocly/cli build-docs openapi.json --output api-docs/index.html"
   },
   "keywords": [],
   "author": "",

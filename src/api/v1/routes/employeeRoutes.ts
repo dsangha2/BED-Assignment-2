@@ -14,6 +14,35 @@ const router: Router = express.Router();
 
 /**
  * @openapi
+ * components:
+ *   schemas:
+ *     Employee:
+ *       type: object
+ *       properties:
+ *         id:
+ *           type: string
+ *           description: Unique identifier for the employee
+ *         firstName:
+ *           type: string
+ *           description: Employee's first name
+ *         lastName:
+ *           type: string
+ *           description: Employee's last name
+ *         department:
+ *           type: string
+ *           description: Department where the employee works
+ *         branchId:
+ *           type: number
+ *           description: ID of the branch the employee is assigned to
+ *       required:
+ *         - id
+ *         - firstName
+ *         - lastName
+ *         - department
+ */
+
+/**
+ * @openapi
  * /employees:
  *   get:
  *     summary: Get all employees
@@ -22,7 +51,7 @@ const router: Router = express.Router();
  *       - bearerAuth: []
  *     responses:
  *       200:
- *         description: Returns a list of employees
+ *         description: A list of employees
  *         content:
  *           application/json:
  *             schema:
@@ -49,7 +78,7 @@ router.get("/", employeeController.getAllEmployees);
  *         description: The ID of the branch
  *     responses:
  *       200:
- *         description: List of employees for the given branch
+ *         description: A list of employees for the given branch
  */
 router.get("/branch/:branchId", employeeController.getEmployeesByBranch);
 
@@ -70,7 +99,7 @@ router.get("/branch/:branchId", employeeController.getEmployeesByBranch);
  *         description: The department name
  *     responses:
  *       200:
- *         description: List of employees in the specified department
+ *         description: A list of employees in the specified department
  */
 router.get("/department/:department", employeeController.getEmployeesByDepartment);
 
@@ -91,7 +120,7 @@ router.get("/department/:department", employeeController.getEmployeesByDepartmen
  *         description: The ID of the employee
  *     responses:
  *       200:
- *         description: Returns the requested employee
+ *         description: An employee object
  *         content:
  *           application/json:
  *             schema:
@@ -118,7 +147,7 @@ router.get("/:id", employeeController.getEmployeeById);
  *         description: The ID of the employee
  *     responses:
  *       200:
- *         description: Employee deleted
+ *         description: Employee deleted successfully
  *       404:
  *         description: Employee not found
  */
@@ -133,7 +162,7 @@ router.delete("/:id", employeeController.deleteEmployee);
  *     security:
  *       - bearerAuth: []
  *     requestBody:
- *       description: Employee data
+ *       description: Employee data to create
  *       required: true
  *       content:
  *         application/json:
