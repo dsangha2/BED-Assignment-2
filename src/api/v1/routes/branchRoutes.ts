@@ -52,7 +52,9 @@ const router: Router = express.Router();
  *               items:
  *                 $ref: '#/components/schemas/Branch'
  */
-router.get("/", branchController.getAllBranches);
+router.get("/", (req, res, next) => {
+    branchController.getAllBranches(req, res, next);
+  });
 
 /**
  * @openapi
