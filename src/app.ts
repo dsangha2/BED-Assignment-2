@@ -4,6 +4,9 @@ import setupSwagger from "../config/swagger";
 import employeeRoutes from "./api/v1/routes/employeeRoutes";
 import branchRoutes from "./api/v1/routes/branchRoutes";
 import errorHandler from "./api/v1/middleware/errorHandler";
+import dotenv from "dotenv"
+
+dotenv.config();
 
 const app: Express = express();
 
