@@ -12,33 +12,127 @@ import { branchSchema } from "../schemas/branchSchema";
 
 const router: Router = express.Router();
 
+
 /**
- * @route GET /
- * @description Get all branches.
+ * @openapi
+ * /branches:
+ *   get:
+ *     summary: Get all branches
+ *     tags: [Branches]
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: Returns a list of branches
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 $ref: '#/components/schemas/Branch'
  */
 router.get("/", branchController.getAllBranches);
 
 /**
- * @route GET /:id
- * @description Get a branch by ID.
+ * @openapi
+ * /branches/{id}:
+ *   get:
+ *     summary: Get a branch by ID
+ *     tags: [Branches]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: The ID of the branch
+ *     responses:
+ *       200:
+ *         description: A single branch
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Branch'
+ *       404:
+ *         description: Branch not found
  */
 router.get("/:id", branchController.getBranchById);
 
 /**
- * @route DELETE /:id
- * @description Delete a branch.
+ * @openapi
+ * /branches/{id}:
+ *   delete:
+ *     summary: Delete a branch by ID
+ *     tags: [Branches]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: The ID of the branch
+ *     responses:
+ *       200:
+ *         description: Branch deleted successfully
+ *       404:
+ *         description: Branch not found
  */
 router.delete("/:id", branchController.deleteBranch);
 
 /**
- * @route POST /
- * @description Create a new branch.
+ * @openapi
+ * /branches:
+ *   post:
+ *     summary: Create a new branch
+ *     tags: [Branches]
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       description: Branch data
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/Branch'
+ *     responses:
+ *       201:
+ *         description: Branch created
+ *       400:
+ *         description: Invalid input
  */
 router.post("/", validateRequest(branchSchema), branchController.createBranch);
 
 /**
- * @route PUT /:id
- * @description Update an existing branch.
+ * @openapi
+ * /branches/{id}:
+ *   put:
+ *     summary: Update an existing branch
+ *     tags: [Branches]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: The ID of the branch
+ *     requestBody:
+ *       description: Branch data
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/Branch'
+ *     responses:
+ *       200:
+ *         description: Branch updated
+ *       404:
+ *         description: Branch not found
  */
 router.put("/:id", validateRequest(branchSchema), branchController.updateBranch);
 
