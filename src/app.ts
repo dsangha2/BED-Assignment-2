@@ -5,10 +5,13 @@ import employeeRoutes from "./api/v1/routes/employeeRoutes";
 import branchRoutes from "./api/v1/routes/branchRoutes";
 import errorHandler from "./api/v1/middleware/errorHandler";
 import dotenv from "dotenv"
+import helmet from "helmet"
 
 dotenv.config();
 
 const app: Express = express();
+
+app.use(helmet());
 
 app.use(express.json());
 
